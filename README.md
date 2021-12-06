@@ -17,7 +17,9 @@ const {
   getPlaylists,
   getTop100,
   getChartHome,
-  getInfo
+  getInfo,
+  getLyric,
+  getSearch
 } = require("zingmp3-api-full");
 ```
 
@@ -25,47 +27,49 @@ const {
 
 ### Get Song
 ```javascript
-getSong("ZU7C8FDU", (data) => {
+getSong("ZU7C8FDU").then((data) => {
   console.log(data)
 })
 ```
 
 ### Get Playlist
 ```javascript
-getPlaylists("ZWZB969E", (data) => {
+getPlaylists("ZWZB969E").then((data) => {
   console.log(data)
 })
 ```
 
 ### getTop100
 ```javascript
-getTop100((data) => {
+getTop100().then((data) => {
   console.log(data)
 })
 ```
+
 ### getChartHome
 ```javascript
-getChartHome((data) => {
+getChartHome().then((data) => {
   console.log(data)
 })
 ```
 
 ### Get Song Info
 ```javascript
-getInfo("ZU7C8FDU", (data) => {
+getInfo("ZU7C8FDU").then((data) => {
   console.log(data)
 })
 ```
+
 ### Get lyric song
 ```javascript
-getlyric("ZU7C8FDU", (data) => {
+getLyric("ZU7C8FDU").then((data) => {
   console.log(data)
 })
 ```
 
 ### Search Song
 ```javascript
-getSearch("son tung", (data) => {
+getSearch("son tung").then((data) => {
   console.log(data)
 })
 ```

@@ -1,19 +1,19 @@
-export declare const setZingCookie: (callback: any) => void;
-export declare const getSong: (id: string, callback: any) => void;
-export declare const getPlaylists: (id: string, callback: any) => void;
-export declare const getTop100: (callback: any) => void;
-export declare const getChartHome: (callback: any) => void;
-export declare const getInfo: (id: string, callback: any) => void;
-export declare const getLyric: (id: string, callback: any) => void;
-export declare const getSearch: (name: string, callback: any) => void;
+export declare const setZingCookie: () => Promise<any>;
+export declare const getSong: (id: string) => Promise<any>;
+export declare const getPlaylists: (id: string) => Promise<any>;
+export declare const getTop100: () => Promise<any>;
+export declare const getChartHome: () => Promise<any>;
+export declare const getInfo: (id: string) => Promise<any>;
+export declare const getLyric: (id: string) => Promise<any>;
+export declare const getSearch: (name: string) => Promise<any>;
 declare const _default: {
-    getSong: (id: string, callback: any) => void;
-    getPlaylists: (id: string, callback: any) => void;
-    getTop100: (callback: any) => void;
-    getChartHome: (callback: any) => void;
-    getInfo: (id: string, callback: any) => void;
-    getLyric: (id: string, callback: any) => void;
-    getSearch: (name: string, callback: any) => void;
+    getSong: (id: string) => Promise<any>;
+    getPlaylists: (id: string) => Promise<any>;
+    getTop100: () => Promise<any>;
+    getChartHome: () => Promise<any>;
+    getInfo: (id: string) => Promise<any>;
+    getLyric: (id: string) => Promise<any>;
+    getSearch: (name: string) => Promise<any>;
 };
 export default _default;
 //# sourceMappingURL=index.d.ts.map
