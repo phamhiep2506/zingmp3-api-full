@@ -56,3 +56,16 @@ getInfo("ZU7C8FDU", (data) => {
   console.log(data)
 })
 ```
+### Get lyric song
+```javascript
+getlyric("ZU7C8FDU", (data) => {
+  console.log(data)
+})
+```
+
+### Search Song
+```javascript
+getSearch("son tung", (data) => {
+  console.log(data)
+})
+```

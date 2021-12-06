@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getInfo = exports.getChartHome = exports.getTop100 = exports.getPlaylists = exports.getSong = exports.setZingCookie = void 0;
+exports.getSearch = exports.getLyric = exports.getInfo = exports.getChartHome = exports.getTop100 = exports.getPlaylists = exports.getSong = exports.setZingCookie = void 0;
 const axios = require("axios");
 const crypto = require("crypto");
 const VERSION = "1.4.11";
@@ -10,8 +10,11 @@ const PATH_PLAYLIST = "/api/v2/page/get/playlist";
 const PATH_TOP = "/api/v2/page/get/top-100";
 const PATH_INFO = "/api/v2/song/get/info";
 const PATH_CHARTHOME = "/api/v2/page/get/chart-home";
-const Z_SECRET_KEY = "2aa2d1c561e809b267f3638c4a307aab";
-const Z_API_KEY = "88265e23d4284f25963e6eedac8fbfa3";
+const PATH_LYRIC = "/api/v2/lyric/get/lyric";
+const PATH_SEARCH = "/api/v2/search/multi";
+const SECRET_KEY = "2aa2d1c561e809b267f3638c4a307aab";
+const API_KEY = "88265e23d4284f25963e6eedac8fbfa3";
+const CTIME = String(Math.floor(Date.now() / 1000));
 const getHash256 = (a) => {
     return crypto.createHash("sha256").update(a).digest("hex");
 };
@@ -26,9 +29,8 @@ const setZingCookie = (callback) => {
 };
 exports.setZingCookie = setZingCookie;
 const getSong = (id, callback) => {
-    let CTIME = String(Math.floor(Date.now() / 1000));
-    let signature = getHmac512(PATH_SONG +
-        getHash256(`ctime=${CTIME}id=${id}version=${VERSION}`), Z_SECRET_KEY);
+    const signature = getHmac512(PATH_SONG +
+        getHash256(`ctime=${CTIME}id=${id}version=${VERSION}`), SECRET_KEY);
     (0, exports.setZingCookie)((cookie) => {
         axios.get(`${URL}${PATH_SONG}`, {
             headers: {
@@ -39,7 +41,7 @@ const getSong = (id, callback) => {
                 "ctime": CTIME,
                 "version": VERSION,
                 "sig": signature,
-                "apiKey": Z_API_KEY
+                "apiKey": API_KEY
             }
         })
             .then((res) => {
@@ -49,9 +51,8 @@ const getSong = (id, callback) => {
 };
 exports.getSong = getSong;
 const getPlaylists = (id, callback) => {
-    let CTIME = String(Math.floor(Date.now() / 1000));
-    let signature = getHmac512(PATH_PLAYLIST +
-        getHash256(`ctime=${CTIME}id=${id}version=${VERSION}`), Z_SECRET_KEY);
+    const signature = getHmac512(PATH_PLAYLIST +
+        getHash256(`ctime=${CTIME}id=${id}version=${VERSION}`), SECRET_KEY);
     (0, exports.setZingCookie)((cookie) => {
         axios.get(`${URL}${PATH_PLAYLIST}`, {
             headers: {
@@ -62,7 +63,7 @@ const getPlaylists = (id, callback) => {
                 "ctime": CTIME,
                 "version": VERSION,
                 "sig": signature,
-                "apiKey": Z_API_KEY
+                "apiKey": API_KEY
             }
         })
             .then((res) => {
@@ -72,9 +73,8 @@ const getPlaylists = (id, callback) => {
 };
 exports.getPlaylists = getPlaylists;
 const getTop100 = (callback) => {
-    let CTIME = String(Math.floor(Date.now() / 1000));
-    let signature = getHmac512(PATH_TOP +
-        getHash256(`ctime=${CTIME}version=${VERSION}`), Z_SECRET_KEY);
+    const signature = getHmac512(PATH_TOP +
+        getHash256(`ctime=${CTIME}version=${VERSION}`), SECRET_KEY);
     (0, exports.setZingCookie)((cookie) => {
         axios.get(`${URL}${PATH_TOP}`, {
             headers: {
@@ -84,7 +84,7 @@ const getTop100 = (callback) => {
                 "ctime": CTIME,
                 "version": VERSION,
                 "sig": signature,
-                "apiKey": Z_API_KEY
+                "apiKey": API_KEY
             }
         })
             .then((res) => {
@@ -94,9 +94,8 @@ const getTop100 = (callback) => {
 };
 exports.getTop100 = getTop100;
 const getChartHome = (callback) => {
-    let CTIME = String(Math.floor(Date.now() / 1000));
-    let signature = getHmac512(PATH_CHARTHOME +
-        getHash256(`ctime=${CTIME}version=${VERSION}`), Z_SECRET_KEY);
+    const signature = getHmac512(PATH_CHARTHOME +
+        getHash256(`ctime=${CTIME}version=${VERSION}`), SECRET_KEY);
     (0, exports.setZingCookie)((cookie) => {
         axios.get(`${URL}${PATH_CHARTHOME}`, {
             headers: {
@@ -106,7 +105,7 @@ const getChartHome = (callback) => {
                 "ctime": CTIME,
                 "version": VERSION,
                 "sig": signature,
-                "apiKey": Z_API_KEY
+                "apiKey": API_KEY
             }
         })
             .then((res) => {
@@ -116,9 +115,8 @@ const getChartHome = (callback) => {
 };
 exports.getChartHome = getChartHome;
 const getInfo = (id, callback) => {
-    let CTIME = String(Math.floor(Date.now() / 1000));
-    let signature = getHmac512(PATH_INFO +
-        getHash256(`ctime=${CTIME}id=${id}version=${VERSION}`), Z_SECRET_KEY);
+    const signature = getHmac512(PATH_INFO +
+        getHash256(`ctime=${CTIME}id=${id}version=${VERSION}`), SECRET_KEY);
     (0, exports.setZingCookie)((cookie) => {
         axios.get(`${URL}${PATH_INFO}`, {
             headers: {
@@ -129,7 +127,7 @@ const getInfo = (id, callback) => {
                 "ctime": CTIME,
                 "version": VERSION,
                 "sig": signature,
-                "apiKey": Z_API_KEY
+                "apiKey": API_KEY
             }
         })
             .then((res) => {
@@ -138,11 +136,57 @@ const getInfo = (id, callback) => {
     });
 };
 exports.getInfo = getInfo;
+const getLyric = (id, callback) => {
+    const signature = getHmac512(PATH_LYRIC +
+        getHash256(`ctime=${CTIME}id=${id}version=${VERSION}`), SECRET_KEY);
+    (0, exports.setZingCookie)((cookie) => {
+        axios.get(`${URL}${PATH_LYRIC}`, {
+            headers: {
+                Cookie: `${cookie}`,
+            },
+            params: {
+                "id": id,
+                "ctime": CTIME,
+                "version": VERSION,
+                "sig": signature,
+                "apiKey": API_KEY
+            }
+        })
+            .then((res) => {
+            callback(res.data);
+        });
+    });
+};
+exports.getLyric = getLyric;
+const getSearch = (name, callback) => {
+    const signature = getHmac512(PATH_SEARCH +
+        getHash256(`ctime=${CTIME}version=${VERSION}`), SECRET_KEY);
+    (0, exports.setZingCookie)((cookie) => {
+        axios.get(`${URL}${PATH_SEARCH}`, {
+            headers: {
+                Cookie: `${cookie}`,
+            },
+            params: {
+                "q": name,
+                "ctime": CTIME,
+                "version": VERSION,
+                "sig": signature,
+                "apiKey": API_KEY
+            }
+        })
+            .then((res) => {
+            callback(res.data);
+        });
+    });
+};
+exports.getSearch = getSearch;
 exports.default = {
     getSong: exports.getSong,
     getPlaylists: exports.getPlaylists,
     getTop100: exports.getTop100,
     getChartHome: exports.getChartHome,
-    getInfo: exports.getInfo
+    getInfo: exports.getInfo,
+    getLyric: exports.getLyric,
+    getSearch: exports.getSearch
 };
 //# sourceMappingURL=index.js.map
