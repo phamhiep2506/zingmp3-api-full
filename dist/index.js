@@ -118,7 +118,7 @@ exports.getChartHome = getChartHome;
 const getInfo = (id, callback) => {
     let CTIME = String(Math.floor(Date.now() / 1000));
     let signature = getHmac512(PATH_INFO +
-        getHash256(`ctime=${CTIME}version=${VERSION}`), Z_SECRET_KEY);
+        getHash256(`ctime=${CTIME}id=${id}version=${VERSION}`), Z_SECRET_KEY);
     (0, exports.setZingCookie)((cookie) => {
         axios.get(`${URL}${PATH_INFO}`, {
             headers: {

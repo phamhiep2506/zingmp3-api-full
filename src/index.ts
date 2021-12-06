@@ -131,7 +131,7 @@ export const getInfo = (id:string, callback:any) => {
   let CTIME:String = String(Math.floor(Date.now() / 1000));
   let signature:String = getHmac512(
     PATH_INFO +
-    getHash256(`ctime=${CTIME}version=${VERSION}`),
+    getHash256(`ctime=${CTIME}id=${id}version=${VERSION}`),
     Z_SECRET_KEY
   );
   setZingCookie((cookie:String) => {

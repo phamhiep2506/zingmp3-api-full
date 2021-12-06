@@ -12,7 +12,7 @@ const {
   getTop100,
   getChartHome,
   getInfo
-} = require("zing-api-full");
+} = require("zingmp3-api-full");
 ```
 
 ## Usage
