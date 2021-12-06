@@ -1,6 +1,12 @@
 # Zing Mp3 API
 
-## Install 
+### Music Player Use ZingMp3 Api
+[https://github.com/phamhiep2506/music-player](https://github.com/phamhiep2506/music-player)
+
+### Demo
+[https://music-player-pink.vercel.app](https://music-player-pink.vercel.app)
+
+## Install
 ```bash
 npm i zingmp3-api-full
 ```
