@@ -16,7 +16,7 @@
     "api"
   ],
   "author": "phamhiep2506 <phamhiep25062k@gmail.com>",
-  "license": "MIT",
+  "license": "ISC",
   "scripts": {
     "dev": "tsc --watch"
   },
