@@ -9,18 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSearch = exports.getLyric = exports.getInfo = exports.getChartHome = exports.getTop100 = exports.getPlaylists = exports.getSong = exports.setZingCookie = void 0;
+exports.search = exports.getLyric = exports.getInfoSong = exports.getChartHome = exports.getTop100 = exports.getDetailPlaylist = exports.getSong = void 0;
 const axios = require("axios");
 const crypto = require("crypto");
 const VERSION = "1.4.11";
 const URL = "https://zingmp3.vn";
-const PATH_SONG = "/api/v2/song/get/streaming";
-const PATH_PLAYLIST = "/api/v2/page/get/playlist";
-const PATH_TOP = "/api/v2/page/get/top-100";
-const PATH_INFO = "/api/v2/song/get/info";
-const PATH_CHARTHOME = "/api/v2/page/get/chart-home";
-const PATH_LYRIC = "/api/v2/lyric/get/lyric";
-const PATH_SEARCH = "/api/v2/search/multi";
 const SECRET_KEY = "2aa2d1c561e809b267f3638c4a307aab";
 const API_KEY = "88265e23d4284f25963e6eedac8fbfa3";
 const CTIME = String(Math.floor(Date.now() / 1000));
@@ -32,12 +25,14 @@ const getHmac512 = (str, key) => {
     return hmac.update(Buffer.from(str, "utf8")).digest("hex");
 };
 const hashParam = (path, id) => {
-    return getHmac512(path + getHash256(`ctime=${CTIME}id=${id}version=${VERSION}`), SECRET_KEY);
+    if (id == undefined) {
+        return getHmac512(path + getHash256(`ctime=${CTIME}version=${VERSION}`), SECRET_KEY);
+    }
+    else {
+        return getHmac512(path + getHash256(`ctime=${CTIME}id=${id}version=${VERSION}`), SECRET_KEY);
+    }
 };
-const hashParamNoId = (path) => {
-    return getHmac512(path + getHash256(`ctime=${CTIME}version=${VERSION}`), SECRET_KEY);
-};
-const setZingCookie = () => __awaiter(void 0, void 0, void 0, function* () {
+const getCookie = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let res = yield axios.get(`${URL}`);
         return res.headers["set-cookie"][1];
@@ -46,166 +41,79 @@ const setZingCookie = () => __awaiter(void 0, void 0, void 0, function* () {
         console.error(err);
     }
 });
-exports.setZingCookie = setZingCookie;
-const getSong = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    let cookie = yield (0, exports.setZingCookie)();
+const client = axios.create({
+    baseURL: `${URL}`,
+});
+client.interceptors.response.use((res) => res.data); // setting axiosresponse data
+const requestZingMp3 = (path, qs) => __awaiter(void 0, void 0, void 0, function* () {
+    let cookie = yield getCookie();
     try {
-        let res = yield axios.get(`${URL}${PATH_SONG}`, {
+        let res = yield client.get(path, {
             headers: {
                 Cookie: `${cookie}`,
             },
-            params: {
-                id: id,
-                ctime: CTIME,
-                version: VERSION,
-                sig: hashParam(PATH_SONG, id),
-                apiKey: API_KEY,
-            },
+            params: Object.assign(Object.assign({}, qs), { ctime: CTIME, version: VERSION, apiKey: API_KEY }),
         });
-        return res.data;
+        return res;
     }
     catch (err) {
         console.error(err);
     }
+});
+const getSong = (songId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield requestZingMp3("/api/v2/song/get/streaming", {
+        id: songId,
+        sig: hashParam("/api/v2/song/get/streaming", songId),
+    });
 });
 exports.getSong = getSong;
-const getPlaylists = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    let cookie = yield (0, exports.setZingCookie)();
-    try {
-        let res = yield axios.get(`${URL}${PATH_PLAYLIST}`, {
-            headers: {
-                Cookie: `${cookie}`,
-            },
-            params: {
-                id: id,
-                ctime: CTIME,
-                version: VERSION,
-                sig: hashParam(PATH_PLAYLIST, id),
-                apiKey: API_KEY,
-            },
-        });
-        return res.data;
-    }
-    catch (err) {
-        console.error(err);
-    }
+const getDetailPlaylist = (playlistId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield requestZingMp3("/api/v2/page/get/playlist", {
+        id: playlistId,
+        sig: hashParam("/api/v2/page/get/playlist", playlistId),
+    });
 });
-exports.getPlaylists = getPlaylists;
+exports.getDetailPlaylist = getDetailPlaylist;
 const getTop100 = () => __awaiter(void 0, void 0, void 0, function* () {
-    let cookie = yield (0, exports.setZingCookie)();
-    try {
-        let res = yield axios.get(`${URL}${PATH_TOP}`, {
-            headers: {
-                Cookie: `${cookie}`,
-            },
-            params: {
-                ctime: CTIME,
-                version: VERSION,
-                sig: hashParamNoId(PATH_TOP),
-                apiKey: API_KEY,
-            },
-        });
-        return res.data;
-    }
-    catch (err) {
-        console.error(err);
-    }
+    return yield requestZingMp3("/api/v2/page/get/top-100", {
+        sig: hashParam("/api/v2/page/get/top-100"),
+    });
 });
 exports.getTop100 = getTop100;
 const getChartHome = () => __awaiter(void 0, void 0, void 0, function* () {
-    let cookie = yield (0, exports.setZingCookie)();
-    try {
-        let res = yield axios.get(`${URL}${PATH_CHARTHOME}`, {
-            headers: {
-                Cookie: `${cookie}`,
-            },
-            params: {
-                ctime: CTIME,
-                version: VERSION,
-                sig: hashParamNoId(PATH_CHARTHOME),
-                apiKey: API_KEY,
-            },
-        });
-        return res.data;
-    }
-    catch (err) {
-        console.error(err);
-    }
+    return yield requestZingMp3("/api/v2/page/get/chart-home", {
+        sig: hashParam("/api/v2/page/get/chart-home"),
+    });
 });
 exports.getChartHome = getChartHome;
-const getInfo = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    let cookie = yield (0, exports.setZingCookie)();
-    try {
-        let res = yield axios.get(`${URL}${PATH_INFO}`, {
-            headers: {
-                Cookie: `${cookie}`,
-            },
-            params: {
-                id: id,
-                ctime: CTIME,
-                version: VERSION,
-                sig: hashParam(PATH_INFO, id),
-                apiKey: API_KEY,
-            },
-        });
-        return res.data;
-    }
-    catch (err) {
-        console.error(err);
-    }
+const getInfoSong = (songId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield requestZingMp3("/api/v2/song/get/info", {
+        id: songId,
+        sig: hashParam("/api/v2/song/get/info", songId),
+    });
 });
-exports.getInfo = getInfo;
-const getLyric = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    let cookie = yield (0, exports.setZingCookie)();
-    try {
-        let res = yield axios.get(`${URL}${PATH_LYRIC}`, {
-            headers: {
-                Cookie: `${cookie}`,
-            },
-            params: {
-                id: id,
-                ctime: CTIME,
-                version: VERSION,
-                sig: hashParam(PATH_LYRIC, id),
-                apiKey: API_KEY,
-            },
-        });
-        return res.data;
-    }
-    catch (err) {
-        console.error(err);
-    }
+exports.getInfoSong = getInfoSong;
+const getLyric = (songId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield requestZingMp3("/api/v2/lyric/get/lyric", {
+        id: songId,
+        sig: hashParam("/api/v2/lyric/get/lyric", songId),
+    });
 });
 exports.getLyric = getLyric;
-const getSearch = (name) => __awaiter(void 0, void 0, void 0, function* () {
-    let cookie = yield (0, exports.setZingCookie)();
-    try {
-        let res = yield axios.get(`${URL}${PATH_SEARCH}`, {
-            headers: {
-                Cookie: `${cookie}`,
-            },
-            params: {
-                q: name,
-                ctime: CTIME,
-                version: VERSION,
-                sig: hashParamNoId(PATH_SEARCH),
-                apiKey: API_KEY,
-            },
-        });
-        return res.data;
-    }
-    catch (err) {
-        console.error(err);
-    }
+const search = (name) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield requestZingMp3("/api/v2/search/multi", {
+        q: name,
+        sig: hashParam("/api/v2/search/multi"),
+    });
 });
-exports.getSearch = getSearch;
+exports.search = search;
 exports.default = {
     getSong: exports.getSong,
-    getPlaylists: exports.getPlaylists,
+    getDetailPlaylist: exports.getDetailPlaylist,
     getTop100: exports.getTop100,
     getChartHome: exports.getChartHome,
-    getInfo: exports.getInfo,
+    getInfoSong: exports.getInfoSong,
     getLyric: exports.getLyric,
-    getSearch: exports.getSearch,
+    search: exports.search
 };
 //# sourceMappingURL=index.js.map

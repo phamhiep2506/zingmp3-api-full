@@ -1,7 +1,7 @@
 {
   "name": "zingmp3-api-full",
-  "version": "1.0.5",
-  "description": "ZingMp3 Api",
+  "version": "1.0.6",
+  "description": "zingmp3-api-full",
   "main": "dist/index.js",
   "types": "dist",
   "repository": {
@@ -9,10 +9,9 @@
     "url": "https://github.com/phamhiep2506/zingmp3-api-full.git"
   },
   "keywords": [
-    "mp3",
     "zingmp3",
-    "ZingMp3",
-    "ZingMp3 Api",
+    "zingmp3-api-full",
+    "zingmp3 api",
     "api"
   ],
   "author": "phamhiep2506 <phamhiep25062k@gmail.com>",
