@@ -9,10 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.search = exports.getLyric = exports.getInfoSong = exports.getChartHome = exports.getTop100 = exports.getDetailPlaylist = exports.getSong = void 0;
+exports.getCategoryMV = exports.getListMV = exports.search = exports.getLyric = exports.getArtist = exports.getInfoSong = exports.getNewReleaseChart = exports.getChartHome = exports.getTop100 = exports.getHome = exports.getDetailPlaylist = exports.getSong = void 0;
 const axios = require("axios");
 const crypto = require("crypto");
-const VERSION = "1.4.11";
+const VERSION = "1.5.4";
 const URL = "https://zingmp3.vn";
 const SECRET_KEY = "2aa2d1c561e809b267f3638c4a307aab";
 const API_KEY = "88265e23d4284f25963e6eedac8fbfa3";
@@ -30,6 +30,17 @@ const hashParam = (path, id) => {
     }
     else {
         return getHmac512(path + getHash256(`ctime=${CTIME}id=${id}version=${VERSION}`), SECRET_KEY);
+    }
+};
+const hashParamHome = (path, page) => {
+    return getHmac512(path + getHash256(`ctime=${CTIME}page=${page}version=${VERSION}`), SECRET_KEY);
+};
+const hashParamMV = (path, id, type, page, count) => {
+    if (count == undefined && page == undefined) {
+        return getHmac512(path + getHash256(`ctime=${CTIME}id=${id}type=${type}version=${VERSION}`), SECRET_KEY);
+    }
+    else {
+        return getHmac512(path + getHash256(`count=${count}ctime=${CTIME}id=${id}page=${page}type=${type}version=${VERSION}`), SECRET_KEY);
     }
 };
 const getCookie = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -74,6 +85,14 @@ const getDetailPlaylist = (playlistId) => __awaiter(void 0, void 0, void 0, func
     });
 });
 exports.getDetailPlaylist = getDetailPlaylist;
+const getHome = (page) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield requestZingMp3("/api/v2/page/get/home", {
+        page: page,
+        segmentId: "-1",
+        sig: hashParamHome("/api/v2/page/get/home", page),
+    });
+});
+exports.getHome = getHome;
 const getTop100 = () => __awaiter(void 0, void 0, void 0, function* () {
     return yield requestZingMp3("/api/v2/page/get/top-100", {
         sig: hashParam("/api/v2/page/get/top-100"),
@@ -86,6 +105,12 @@ const getChartHome = () => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.getChartHome = getChartHome;
+const getNewReleaseChart = () => __awaiter(void 0, void 0, void 0, function* () {
+    return yield requestZingMp3("/api/v2/page/get/newrelease-chart", {
+        sig: hashParam("/api/v2/page/get/newrelease-chart"),
+    });
+});
+exports.getNewReleaseChart = getNewReleaseChart;
 const getInfoSong = (songId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield requestZingMp3("/api/v2/song/get/info", {
         id: songId,
@@ -93,6 +118,13 @@ const getInfoSong = (songId) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.getInfoSong = getInfoSong;
+const getArtist = (name) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield requestZingMp3("/api/v2/page/get/artist", {
+        alias: name,
+        sig: hashParam("/api/v2/page/get/artist"),
+    });
+});
+exports.getArtist = getArtist;
 const getLyric = (songId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield requestZingMp3("/api/v2/lyric/get/lyric", {
         id: songId,
@@ -107,13 +139,37 @@ const search = (name) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.search = search;
+const getListMV = (id, page, count) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield requestZingMp3("/api/v2/video/get/list", {
+        id: id,
+        type: "genre",
+        page: page,
+        count: count,
+        sort: "listen",
+        sig: hashParamMV("/api/v2/video/get/list", id, "genre", page, count),
+    });
+});
+exports.getListMV = getListMV;
+const getCategoryMV = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield requestZingMp3("/api/v2/genre/get/info", {
+        id: id,
+        type: "video",
+        sig: hashParamMV("/api/v2/genre/get/info", id, "video"),
+    });
+});
+exports.getCategoryMV = getCategoryMV;
 exports.default = {
     getSong: exports.getSong,
     getDetailPlaylist: exports.getDetailPlaylist,
+    getHome: exports.getHome,
     getTop100: exports.getTop100,
     getChartHome: exports.getChartHome,
+    getNewReleaseChart: exports.getNewReleaseChart,
     getInfoSong: exports.getInfoSong,
+    getArtist: exports.getArtist,
     getLyric: exports.getLyric,
-    search: exports.search
+    search: exports.search,
+    getListMV: exports.getListMV,
+    getCategoryMV: exports.getCategoryMV
 };
 //# sourceMappingURL=index.js.map

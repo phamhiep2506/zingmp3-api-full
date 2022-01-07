@@ -19,11 +19,16 @@ npm i zingmp3-api-full
 const {
   getSong,
   getDetailPlaylist,
+  getHome,
   getTop100,
   getChartHome,
+  getNewReleaseChart,
   getInfoSong,
+  getArtist,
   getLyric,
-  search
+  search,
+  getListMV,
+  getCategoryMV
 } = require("zingmp3-api-full")
 ```
 
@@ -56,41 +61,39 @@ ZingMp3.getSong("ZOACFBBU").then((data) => {
 })
 ```
 
-### Get getDetailPlaylist
+### Get Detail Playlist
 ```javascript
 getDetailPlaylist("ZWZB969E").then((data) => {
   console.log(data)
 })
 ```
-or
+
+### Get Home
+> param {page} : 1, 2, 3, 4...
+
 ```javascript
-ZingMp3.getDetailPlaylist("ZWZB969E").then((data) => {
+getHome("1").then((data) => {
   console.log(data)
 })
 ```
 
-### getTop100
+### Get Top 100
 ```javascript
 getTop100().then((data) => {
   console.log(data)
 })
 ```
-or
-```javascript
-ZingMp3.getTop100().then((data) => {
-  console.log(data)
-})
-```
 
-### getChartHome
+### Get Chart Home
 ```javascript
 getChartHome().then((data) => {
   console.log(data)
 })
 ```
-or
+
+### Get New Release Chart
 ```javascript
-ZingMp3.getChartHome().then((data) => {
+getNewReleaseChart().then((data) => {
   console.log(data)
 })
 ```
@@ -101,35 +104,41 @@ getInfoSong("ZOACFBBU").then((data) => {
   console.log(data)
 })
 ```
-or
+
+### Get Artist
+> param {name} : sontungmtp
 ```javascript
-ZingMp3.getInfoSong("ZOACFBBU").then((data) => {
+getArtist("sontungmtp").then((data) => {
   console.log(data)
 })
 ```
 
-### Get lyric song
+### Get Lyric Song
 ```javascript
 getLyric("ZOACFBBU").then((data) => {
-  console.log(data)
-})
-```
-or
-```javascript
-ZingMp3.getLyric("ZOACFBBU").then((data) => {
   console.log(data)
 })
 ```
 
 ### Search Song
 ```javascript
-search("son tung mtp").then((data) => {
+search("sontungmtp").then((data) => {
   console.log(data)
 })
 ```
-or
+
+### Get List MV
+> param {id, page, count}
 ```javascript
-ZingMp3.search("son tung mtp").then((data) => {
+getListMV("IWZ9Z08I", "1", "15").then((data) => {
+  console.log(data)
+})
+```
+
+### Get Category MV
+> param {id}
+```javascript
+getCategoryMV("IWZ9Z08I").then((data) => {
   console.log(data)
 })
 ```
