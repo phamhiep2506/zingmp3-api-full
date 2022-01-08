@@ -17,7 +17,7 @@ const getHmac512 = (str: string, key: string) => {
 };
 
 const hashParam = (path: string, id: void) => {
-  if(id == undefined) {
+  if (id == undefined) {
     return getHmac512(
       path + getHash256(`ctime=${CTIME}version=${VERSION}`),
       SECRET_KEY
@@ -37,15 +37,24 @@ const hashParamHome = (path: string, page: string) => {
   );
 };
 
-const hashParamMV = (path: string, id: string, type: string, page: void, count: void) => {
-  if(count == undefined && page == undefined) {
+const hashParamMV = (
+  path: string,
+  id: string,
+  type: string,
+  page: void,
+  count: void
+) => {
+  if (count == undefined && page == undefined) {
     return getHmac512(
       path + getHash256(`ctime=${CTIME}id=${id}type=${type}version=${VERSION}`),
       SECRET_KEY
     );
   } else {
     return getHmac512(
-      path + getHash256(`count=${count}ctime=${CTIME}id=${id}page=${page}type=${type}version=${VERSION}`),
+      path +
+        getHash256(
+          `count=${count}ctime=${CTIME}id=${id}page=${page}type=${type}version=${VERSION}`
+        ),
       SECRET_KEY
     );
   }
@@ -98,8 +107,8 @@ export const getDetailPlaylist = async (playlistId: void) => {
   return await requestZingMp3("/api/v2/page/get/playlist", {
     id: playlistId,
     sig: hashParam("/api/v2/page/get/playlist", playlistId),
-  })
-}
+  });
+};
 
 export const getHome = async (page: string) => {
   return await requestZingMp3("/api/v2/page/get/home", {
@@ -118,42 +127,42 @@ export const getTop100 = async () => {
 export const getChartHome = async () => {
   return await requestZingMp3("/api/v2/page/get/chart-home", {
     sig: hashParam("/api/v2/page/get/chart-home"),
-  })
-}
+  });
+};
 
 export const getNewReleaseChart = async () => {
   return await requestZingMp3("/api/v2/page/get/newrelease-chart", {
     sig: hashParam("/api/v2/page/get/newrelease-chart"),
-  })
-}
+  });
+};
 
 export const getInfoSong = async (songId: void) => {
   return await requestZingMp3("/api/v2/song/get/info", {
     id: songId,
     sig: hashParam("/api/v2/song/get/info", songId),
-  })
-}
+  });
+};
 
 export const getArtist = async (name: void) => {
   return await requestZingMp3("/api/v2/page/get/artist", {
     alias: name,
     sig: hashParam("/api/v2/page/get/artist"),
-  })
-}
+  });
+};
 
 export const getLyric = async (songId: void) => {
   return await requestZingMp3("/api/v2/lyric/get/lyric", {
     id: songId,
     sig: hashParam("/api/v2/lyric/get/lyric", songId),
-  })
-}
+  });
+};
 
 export const search = async (name: void) => {
   return await requestZingMp3("/api/v2/search/multi", {
     q: name,
     sig: hashParam("/api/v2/search/multi"),
-  })
-}
+  });
+};
 
 export const getListMV = async (id: string, page: void, count: void) => {
   return await requestZingMp3("/api/v2/video/get/list", {
@@ -163,16 +172,16 @@ export const getListMV = async (id: string, page: void, count: void) => {
     count: count,
     sort: "listen",
     sig: hashParamMV("/api/v2/video/get/list", id, "genre", page, count),
-  })
-}
+  });
+};
 
 export const getCategoryMV = async (id: string) => {
   return await requestZingMp3("/api/v2/genre/get/info", {
     id: id,
     type: "video",
     sig: hashParamMV("/api/v2/genre/get/info", id, "video"),
-  })
-}
+  });
+};
 
 export default {
   getSong,
@@ -186,5 +195,5 @@ export default {
   getLyric,
   search,
   getListMV,
-  getCategoryMV
+  getCategoryMV,
 };
