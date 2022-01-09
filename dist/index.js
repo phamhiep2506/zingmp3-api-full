@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCategoryMV = exports.getListMV = exports.search = exports.getLyric = exports.getArtist = exports.getInfoSong = exports.getNewReleaseChart = exports.getChartHome = exports.getTop100 = exports.getHome = exports.getDetailPlaylist = exports.getSong = void 0;
+exports.getVideo = exports.getCategoryMV = exports.getListMV = exports.search = exports.getLyric = exports.getArtist = exports.getInfoSong = exports.getNewReleaseChart = exports.getChartHome = exports.getTop100 = exports.getHome = exports.getDetailPlaylist = exports.getSong = void 0;
 const axios = require("axios");
 const crypto = require("crypto");
 const VERSION = "1.5.4";
@@ -40,7 +40,8 @@ const hashParamMV = (path, id, type, page, count) => {
         return getHmac512(path + getHash256(`ctime=${CTIME}id=${id}type=${type}version=${VERSION}`), SECRET_KEY);
     }
     else {
-        return getHmac512(path + getHash256(`count=${count}ctime=${CTIME}id=${id}page=${page}type=${type}version=${VERSION}`), SECRET_KEY);
+        return getHmac512(path +
+            getHash256(`count=${count}ctime=${CTIME}id=${id}page=${page}type=${type}version=${VERSION}`), SECRET_KEY);
     }
 };
 const getCookie = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -158,6 +159,13 @@ const getCategoryMV = (id) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.getCategoryMV = getCategoryMV;
+const getVideo = (videoId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield requestZingMp3("/api/v2/page/get/video", {
+        id: videoId,
+        sig: hashParam("/api/v2/page/get/video", videoId),
+    });
+});
+exports.getVideo = getVideo;
 exports.default = {
     getSong: exports.getSong,
     getDetailPlaylist: exports.getDetailPlaylist,
@@ -170,6 +178,7 @@ exports.default = {
     getLyric: exports.getLyric,
     search: exports.search,
     getListMV: exports.getListMV,
-    getCategoryMV: exports.getCategoryMV
+    getCategoryMV: exports.getCategoryMV,
+    getVideo: exports.getVideo
 };
 //# sourceMappingURL=index.js.map

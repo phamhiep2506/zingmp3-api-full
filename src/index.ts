@@ -183,6 +183,13 @@ export const getCategoryMV = async (id: string) => {
   });
 };
 
+export const getVideo = async (videoId: void) => {
+  return await requestZingMp3("/api/v2/page/get/video", {
+    id: videoId,
+    sig: hashParam("/api/v2/page/get/video", videoId),
+  });
+};
+
 export default {
   getSong,
   getDetailPlaylist,
@@ -196,4 +203,5 @@ export default {
   search,
   getListMV,
   getCategoryMV,
+  getVideo
 };

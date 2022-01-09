@@ -10,6 +10,7 @@ export declare const getLyric: (songId: void) => Promise<any>;
 export declare const search: (name: void) => Promise<any>;
 export declare const getListMV: (id: string, page: void, count: void) => Promise<any>;
 export declare const getCategoryMV: (id: string) => Promise<any>;
+export declare const getVideo: (videoId: void) => Promise<any>;
 declare const _default: {
     getSong: (songId: void) => Promise<any>;
     getDetailPlaylist: (playlistId: void) => Promise<any>;
@@ -23,6 +24,7 @@ declare const _default: {
     search: (name: void) => Promise<any>;
     getListMV: (id: string, page: void, count: void) => Promise<any>;
     getCategoryMV: (id: string) => Promise<any>;
+    getVideo: (videoId: void) => Promise<any>;
 };
 export default _default;
 //# sourceMappingURL=index.d.ts.map

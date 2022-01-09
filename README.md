@@ -28,7 +28,8 @@ const {
   getLyric,
   search,
   getListMV,
-  getCategoryMV
+  getCategoryMV,
+  getVideo
 } = require("zingmp3-api-full")
 ```
 
@@ -139,6 +140,14 @@ getListMV("IWZ9Z08I", "1", "15").then((data) => {
 > param {id}
 ```javascript
 getCategoryMV("IWZ9Z08I").then((data) => {
+  console.log(data)
+})
+```
+
+### Get Video MV
+> param {id}
+```javascript
+getVideo("ZWEW9WI8").then((data) => {
   console.log(data)
 })
 ```

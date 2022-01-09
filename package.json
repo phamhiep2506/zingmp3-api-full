@@ -1,6 +1,6 @@
 {
   "name": "zingmp3-api-full",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "zingmp3-api-full",
   "main": "dist/index.js",
   "types": "dist",
