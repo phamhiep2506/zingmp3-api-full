@@ -1,207 +1,345 @@
-const axios = require("axios");
-const crypto = require("crypto");
+import axios from "axios"
+import crypto from "crypto"
 
-const VERSION = "1.5.4";
-const URL = "https://zingmp3.vn";
-const SECRET_KEY = "2aa2d1c561e809b267f3638c4a307aab";
-const API_KEY = "88265e23d4284f25963e6eedac8fbfa3";
-const CTIME = String(Math.floor(Date.now() / 1000));
+class ZingMp3Api {
 
-const getHash256 = (a: string) => {
-  return crypto.createHash("sha256").update(a).digest("hex");
-};
+  public VERSION: string
+  public URL: string
+  public SECRET_KEY: string
+  public API_KEY: string
+  public CTIME: string
 
-const getHmac512 = (str: string, key: string) => {
-  let hmac = crypto.createHmac("sha512", key);
-  return hmac.update(Buffer.from(str, "utf8")).digest("hex");
-};
+  constructor(VERSION: string, URL: string, SECRET_KEY: string, API_KEY: string, CTIME: string) {
+    this.VERSION = VERSION
+    this.URL = URL
+    this.SECRET_KEY = SECRET_KEY
+    this.API_KEY = API_KEY
+    this.CTIME = CTIME
+  }
 
-const hashParam = (path: string, id: void) => {
-  if (id == undefined) {
-    return getHmac512(
-      path + getHash256(`ctime=${CTIME}version=${VERSION}`),
-      SECRET_KEY
-    );
-  } else {
-    return getHmac512(
-      path + getHash256(`ctime=${CTIME}id=${id}version=${VERSION}`),
-      SECRET_KEY
+  private getHash256(str: string) {
+    return crypto.createHash("sha256")
+                 .update(str)
+                 .digest("hex")
+  }
+
+  private getHmac512(str: string, key: string) {
+    let hmac = crypto.createHmac("sha512", key)
+    return hmac.update(Buffer.from(str, "utf8"))
+               .digest("hex")
+  }
+
+  private hashParamNoId(path: string) {
+    return this.getHmac512(
+      path + this.getHash256(`ctime=${this.CTIME}version=${this.VERSION}`),
+      this.SECRET_KEY
+    )
+  }
+
+  private hashParam(path: string, id: string) {
+    return this.getHmac512(
+      path + this.getHash256(`ctime=${this.CTIME}id=${id}version=${this.VERSION}`),
+      this.SECRET_KEY
+    )
+  }
+
+  private hashParamHome(path: string, page: string) {
+    return this.getHmac512(
+      path + this.getHash256(`ctime=${this.CTIME}page=${page}version=${this.VERSION}`),
+      this.SECRET_KEY
+    )
+  }
+
+  private hashCategoryMV (path: string, id: string, type: string) {
+    return this.getHmac512(
+      path + this.getHash256(`ctime=${this.CTIME}id=${id}type=${type}version=${this.VERSION}`),
+      this.SECRET_KEY
     );
   }
-};
 
-const hashParamHome = (path: string, page: string) => {
-  return getHmac512(
-    path + getHash256(`ctime=${CTIME}page=${page}version=${VERSION}`),
-    SECRET_KEY
-  );
-};
-
-const hashParamMV = (
-  path: string,
-  id: string,
-  type: string,
-  page: void,
-  count: void
-) => {
-  if (count == undefined && page == undefined) {
-    return getHmac512(
-      path + getHash256(`ctime=${CTIME}id=${id}type=${type}version=${VERSION}`),
-      SECRET_KEY
-    );
-  } else {
-    return getHmac512(
+  private hashListMV (path: string, id: string, type: string, page: string, count: string) {
+    return this.getHmac512(
       path +
-        getHash256(
-          `count=${count}ctime=${CTIME}id=${id}page=${page}type=${type}version=${VERSION}`
+        this.getHash256(
+          `count=${count}ctime=${this.CTIME}id=${id}page=${page}type=${type}version=${this.VERSION}`
         ),
-      SECRET_KEY
+      this.SECRET_KEY
     );
   }
-};
 
-const getCookie = async () => {
-  try {
-    let res = await axios.get(`${URL}`);
-    return res.headers["set-cookie"][1];
-  } catch (err) {
-    console.error(err);
+  private getCookie(): Promise<any> {
+    return new Promise<any>((resolve, rejects) => {
+        axios.get(`${this.URL}`)
+          .then((res) => {
+            // TODO: Skip Error Object is possibly 'undefined'
+            res.headers["set-cookie"].map((element, index) => {
+              if(index == 1) {
+                resolve(element) // return cookie
+              }
+            })
+          })
+          .catch((err) => {
+            rejects(err) // return error value if any
+          })
+      }
+    )
   }
-};
 
-const client = axios.create({
-  baseURL: `${URL}`,
-});
+  private requestZingMp3(path: string, qs: object): Promise<any> {
+    return new Promise<any>((resolve, rejects) => {
 
-client.interceptors.response.use((res: any) => res.data); // setting axiosresponse data
+      // Config axios request default URL "https://zingmp3.vn"
+      const client = axios.create({
+        baseURL: `${this.URL}`,
+      });
 
-const requestZingMp3 = async (path: string, qs: object) => {
-  let cookie = await getCookie();
+      client.interceptors.response.use((res: any) => res.data); // setting axios response data
 
-  try {
-    let res = await client.get(path, {
-      headers: {
-        Cookie: `${cookie}`,
-      },
-      params: {
-        ...qs,
-        ctime: CTIME,
-        version: VERSION,
-        apiKey: API_KEY,
-      },
-    });
-    return res;
-  } catch (err) {
-    console.error(err);
+      this.getCookie()
+        .then((cookie) => {
+          // request
+          client.get(path, {
+            headers: {
+              Cookie: `${cookie}`,
+            },
+            params: {
+              ...qs,
+              ctime: this.CTIME,
+              version: this.VERSION,
+              apiKey: this.API_KEY,
+            }
+          })
+            .then((res) => {
+              resolve(res)
+            })
+            .catch((err) => {
+              rejects(err)
+            })
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    })
   }
-};
 
-export const getSong = async (songId: void) => {
-  return await requestZingMp3("/api/v2/song/get/streaming", {
-    id: songId,
-    sig: hashParam("/api/v2/song/get/streaming", songId),
-  });
-};
+  // getSong
+  public getSong(songId: string): Promise<any> {
+    return new Promise<any>((resolve, rejects) => {
+      this.requestZingMp3("/api/v2/song/get/streaming", {
+        id: songId,
+        sig: this.hashParam("/api/v2/song/get/streaming", songId)
+      })
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((err) => {
+          rejects(err)
+        })
+    })
+  }
 
-export const getDetailPlaylist = async (playlistId: void) => {
-  return await requestZingMp3("/api/v2/page/get/playlist", {
-    id: playlistId,
-    sig: hashParam("/api/v2/page/get/playlist", playlistId),
-  });
-};
+  // getDetailPlaylist
+  public getDetailPlaylist(playlistId: string): Promise<any> {
+    return new Promise<any>((resolve, rejects) => {
+      this.requestZingMp3("/api/v2/page/get/playlist", {
+        id: playlistId,
+        sig: this.hashParam("/api/v2/page/get/playlist", playlistId)
+      })
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((err) => {
+          rejects(err)
+        })
+    })
+  }
 
-export const getHome = async (page: string) => {
-  return await requestZingMp3("/api/v2/page/get/home", {
-    page: page,
-    segmentId: "-1",
-    sig: hashParamHome("/api/v2/page/get/home", page),
-  });
-};
+  // getHome
+  public getHome(page: string): Promise<any> {
+    return new Promise<any>((resolve, rejects) => {
+      this.requestZingMp3("/api/v2/page/get/home", {
+        page: page,
+        segmentId: "-1",
+        sig: this.hashParamHome("/api/v2/page/get/home", page)
+      })
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((err) => {
+          rejects(err)
+        })
+    })
+  }
 
-export const getTop100 = async () => {
-  return await requestZingMp3("/api/v2/page/get/top-100", {
-    sig: hashParam("/api/v2/page/get/top-100"),
-  });
-};
+  // getTop100
+  public getTop100(): Promise<any> {
+    return new Promise<any>((resolve, rejects) => {
+      this.requestZingMp3("/api/v2/page/get/top-100", {
+        sig: this.hashParamNoId("/api/v2/page/get/top-100")
+      })
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((err) => {
+          rejects(err)
+        })
+    })
+  }
 
-export const getChartHome = async () => {
-  return await requestZingMp3("/api/v2/page/get/chart-home", {
-    sig: hashParam("/api/v2/page/get/chart-home"),
-  });
-};
+  // getChartHome
+  public getChartHome(): Promise<any> {
+    return new Promise<any>((resolve, rejects) => {
+      this.requestZingMp3("/api/v2/page/get/chart-home", {
+        sig: this.hashParamNoId("/api/v2/page/get/chart-home")
+      })
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((err) => {
+          rejects(err)
+        })
+    })
+  }
 
-export const getNewReleaseChart = async () => {
-  return await requestZingMp3("/api/v2/page/get/newrelease-chart", {
-    sig: hashParam("/api/v2/page/get/newrelease-chart"),
-  });
-};
+  // getNewReleaseChart
+  public getNewReleaseChart(): Promise<any> {
+    return new Promise<any>((resolve, rejects) => {
+      this.requestZingMp3("/api/v2/page/get/newrelease-chart", {
+        sig: this.hashParamNoId("/api/v2/page/get/newrelease-chart")
+      })
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((err) => {
+          rejects(err)
+        })
+    })
+  }
 
-export const getInfoSong = async (songId: void) => {
-  return await requestZingMp3("/api/v2/song/get/info", {
-    id: songId,
-    sig: hashParam("/api/v2/song/get/info", songId),
-  });
-};
+  // getInfoSong
+  public getInfoSong(songId: string): Promise<any> {
+    return new Promise<any>((resolve, rejects) => {
+      this.requestZingMp3("/api/v2/song/get/info", {
+        id: songId,
+        sig: this.hashParam("/api/v2/song/get/info", songId)
+      })
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((err) => {
+          rejects(err)
+        })
+    })
+  }
 
-export const getArtist = async (name: void) => {
-  return await requestZingMp3("/api/v2/page/get/artist", {
-    alias: name,
-    sig: hashParam("/api/v2/page/get/artist"),
-  });
-};
+  // getArtist
+  public getArtist(name: string): Promise<any> {
+    return new Promise<any>((resolve, rejects) => {
+      this.requestZingMp3("/api/v2/page/get/artist", {
+        alias: name,
+        sig: this.hashParamNoId("/api/v2/page/get/artist")
+      })
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((err) => {
+          rejects(err)
+        })
+    })
+  }
 
-export const getLyric = async (songId: void) => {
-  return await requestZingMp3("/api/v2/lyric/get/lyric", {
-    id: songId,
-    sig: hashParam("/api/v2/lyric/get/lyric", songId),
-  });
-};
+  // getLyric
+  public getLyric(songId: string): Promise<any> {
+    return new Promise<any>((resolve, rejects) => {
+      this.requestZingMp3("/api/v2/lyric/get/lyric", {
+        id: songId,
+        sig: this.hashParam("/api/v2/lyric/get/lyric", songId)
+      })
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((err) => {
+          rejects(err)
+        })
+    })
+  }
 
-export const search = async (name: void) => {
-  return await requestZingMp3("/api/v2/search/multi", {
-    q: name,
-    sig: hashParam("/api/v2/search/multi"),
-  });
-};
+  // search
+  public search(name: string): Promise<any> {
+    return new Promise<any>((resolve, rejects) => {
+      this.requestZingMp3("/api/v2/search/multi", {
+        q: name,
+        sig: this.hashParamNoId("/api/v2/search/multi")
+      })
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((err) => {
+          rejects(err)
+        })
+    })
+  }
 
-export const getListMV = async (id: string, page: void, count: void) => {
-  return await requestZingMp3("/api/v2/video/get/list", {
-    id: id,
-    type: "genre",
-    page: page,
-    count: count,
-    sort: "listen",
-    sig: hashParamMV("/api/v2/video/get/list", id, "genre", page, count),
-  });
-};
+  // getListMV
+  public getListMV(id: string, page: string, count: string): Promise<any> {
+    return new Promise<any>((resolve, rejects) => {
+      this.requestZingMp3("/api/v2/video/get/list", {
+        id: id,
+        type: "genre",
+        page: page,
+        count: count,
+        sort: "listen",
+        sig: this.hashListMV("/api/v2/video/get/list", id, "genre", page, count),
+      })
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((err) => {
+          rejects(err)
+        })
+    })
+  }
 
-export const getCategoryMV = async (id: string) => {
-  return await requestZingMp3("/api/v2/genre/get/info", {
-    id: id,
-    type: "video",
-    sig: hashParamMV("/api/v2/genre/get/info", id, "video"),
-  });
-};
+  // getCategoryMV
+  public getCategoryMV(id: string): Promise<any> {
+    return new Promise<any>((resolve, rejects) => {
+      this.requestZingMp3("/api/v2/genre/get/info", {
+        id: id,
+        type: "video",
+        sig: this.hashCategoryMV("/api/v2/genre/get/info", id, "video"),
+      })
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((err) => {
+          rejects(err)
+        })
+    })
+  }
 
-export const getVideo = async (videoId: void) => {
-  return await requestZingMp3("/api/v2/page/get/video", {
-    id: videoId,
-    sig: hashParam("/api/v2/page/get/video", videoId),
-  });
-};
+  // getVideo
+  public getVideo(videoId: string): Promise<any> {
+    return new Promise<any>((resolve, rejects) => {
+      this.requestZingMp3("/api/v2/page/get/video", {
+        id: videoId,
+        sig: this.hashParam("/api/v2/page/get/video", videoId),
+      })
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((err) => {
+          rejects(err)
+        })
+    })
+  }
 
-export default {
-  getSong,
-  getDetailPlaylist,
-  getHome,
-  getTop100,
-  getChartHome,
-  getNewReleaseChart,
-  getInfoSong,
-  getArtist,
-  getLyric,
-  search,
-  getListMV,
-  getCategoryMV,
-  getVideo
-};
+} // END
+
+// instance default
+export const ZingMp3 = new ZingMp3Api(
+  "1.5.4", // VERSION
+  "https://zingmp3.vn", // URL
+  "2aa2d1c561e809b267f3638c4a307aab", // SECRET_KEY
+  "88265e23d4284f25963e6eedac8fbfa3", // API_KEY
+  String(Math.floor(Date.now() / 1000)) // CTIME
+)

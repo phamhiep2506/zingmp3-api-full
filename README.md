@@ -16,27 +16,7 @@ npm i zingmp3-api-full
 ```
 
 ```bash
-const {
-  getSong,
-  getDetailPlaylist,
-  getHome,
-  getTop100,
-  getChartHome,
-  getNewReleaseChart,
-  getInfoSong,
-  getArtist,
-  getLyric,
-  search,
-  getListMV,
-  getCategoryMV,
-  getVideo
-} = require("zingmp3-api-full")
-```
-
-or
-
-```bash
-const ZingMp3 = require("zingmp3-api-full")
+const { ZingMp3 } = require("zingmp3-api-full")
 ```
 
 ## Usage
@@ -50,12 +30,7 @@ Example:
 => ID: ZOACFBBU
 
 ### Get Song
-```javascript
-getSong("ZOACFBBU").then((data) => {
-  console.log(data)
-})
-```
-or
+> param {id}
 ```javascript
 ZingMp3.getSong("ZOACFBBU").then((data) => {
   console.log(data)
@@ -63,8 +38,9 @@ ZingMp3.getSong("ZOACFBBU").then((data) => {
 ```
 
 ### Get Detail Playlist
+> param {id}
 ```javascript
-getDetailPlaylist("ZWZB969E").then((data) => {
+ZingMp3.getDetailPlaylist("ZWZB969E").then((data) => {
   console.log(data)
 })
 ```
@@ -73,35 +49,36 @@ getDetailPlaylist("ZWZB969E").then((data) => {
 > param {page} : 1, 2, 3, 4...
 
 ```javascript
-getHome("1").then((data) => {
+ZingMp3.getHome("1").then((data) => {
   console.log(data)
 })
 ```
 
 ### Get Top 100
 ```javascript
-getTop100().then((data) => {
+ZingMp3.getTop100().then((data) => {
   console.log(data)
 })
 ```
 
 ### Get Chart Home
 ```javascript
-getChartHome().then((data) => {
+ZingMp3.getChartHome().then((data) => {
   console.log(data)
 })
 ```
 
 ### Get New Release Chart
 ```javascript
-getNewReleaseChart().then((data) => {
+ZingMp3.getNewReleaseChart().then((data) => {
   console.log(data)
 })
 ```
 
 ### Get Song Info
+> param {id}
 ```javascript
-getInfoSong("ZOACFBBU").then((data) => {
+ZingMp3.getInfoSong("ZOACFBBU").then((data) => {
   console.log(data)
 })
 ```
@@ -109,21 +86,23 @@ getInfoSong("ZOACFBBU").then((data) => {
 ### Get Artist
 > param {name} : sontungmtp
 ```javascript
-getArtist("sontungmtp").then((data) => {
+ZingMp3.getArtist("sontungmtp").then((data) => {
   console.log(data)
 })
 ```
 
 ### Get Lyric Song
+> param {id}
 ```javascript
-getLyric("ZOACFBBU").then((data) => {
+ZingMp3.getLyric("ZOACFBBU").then((data) => {
   console.log(data)
 })
 ```
 
 ### Search Song
+> param {query} : sontungmtp
 ```javascript
-search("sontungmtp").then((data) => {
+ZingMp3.search("sontungmtp").then((data) => {
   console.log(data)
 })
 ```
@@ -131,7 +110,7 @@ search("sontungmtp").then((data) => {
 ### Get List MV
 > param {id, page, count}
 ```javascript
-getListMV("IWZ9Z08I", "1", "15").then((data) => {
+ZingMp3.getListMV("IWZ9Z08I", "1", "15").then((data) => {
   console.log(data)
 })
 ```
@@ -139,7 +118,7 @@ getListMV("IWZ9Z08I", "1", "15").then((data) => {
 ### Get Category MV
 > param {id}
 ```javascript
-getCategoryMV("IWZ9Z08I").then((data) => {
+ZingMp3.getCategoryMV("IWZ9Z08I").then((data) => {
   console.log(data)
 })
 ```
@@ -147,7 +126,7 @@ getCategoryMV("IWZ9Z08I").then((data) => {
 ### Get Video MV
 > param {id}
 ```javascript
-getVideo("ZWEW9WI8").then((data) => {
+ZingMp3.getVideo("ZWEW9WI8").then((data) => {
   console.log(data)
 })
 ```
