@@ -16,7 +16,7 @@ declare class ZingMp3Api {
     private requestZingMp3;
     getSong(songId: string): Promise<any>;
     getDetailPlaylist(playlistId: string): Promise<any>;
-    getHome(page: string): Promise<any>;
+    getHome(): Promise<any>;
     getTop100(): Promise<any>;
     getChartHome(): Promise<any>;
     getNewReleaseChart(): Promise<any>;

@@ -43,9 +43,9 @@ class ZingMp3Api {
     )
   }
 
-  private hashParamHome(path: string, page: string) {
+  private hashParamHome(path: string) {
     return this.getHmac512(
-      path + this.getHash256(`ctime=${this.CTIME}page=${page}version=${this.VERSION}`),
+      path + this.getHash256(`count=30ctime=${this.CTIME}page=1version=${this.VERSION}`),
       this.SECRET_KEY
     )
   }
@@ -155,12 +155,13 @@ class ZingMp3Api {
   }
 
   // getHome
-  public getHome(page: string): Promise<any> {
+  public getHome(): Promise<any> {
     return new Promise<any>((resolve, rejects) => {
       this.requestZingMp3("/api/v2/page/get/home", {
-        page: page,
+        page: 1,
         segmentId: "-1",
-        sig: this.hashParamHome("/api/v2/page/get/home", page)
+        count: "30",
+        sig: this.hashParamHome("/api/v2/page/get/home")
       })
         .then((res) => {
           resolve(res)
@@ -337,7 +338,7 @@ class ZingMp3Api {
 
 // instance default
 export const ZingMp3 = new ZingMp3Api(
-  "1.5.4", // VERSION
+  "1.6.34", // VERSION
   "https://zingmp3.vn", // URL
   "2aa2d1c561e809b267f3638c4a307aab", // SECRET_KEY
   "88265e23d4284f25963e6eedac8fbfa3", // API_KEY

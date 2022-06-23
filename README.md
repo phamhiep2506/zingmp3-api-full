@@ -46,10 +46,9 @@ ZingMp3.getDetailPlaylist("ZWZB969E").then((data) => {
 ```
 
 ### Get Home
-> param {page} : 1, 2, 3, 4...
 
 ```javascript
-ZingMp3.getHome("1").then((data) => {
+ZingMp3.getHome().then((data) => {
   console.log(data)
 })
 ```
