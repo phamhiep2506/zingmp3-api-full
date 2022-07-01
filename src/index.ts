@@ -72,11 +72,13 @@ class ZingMp3Api {
         axios.get(`${this.URL}`)
           .then((res) => {
             // TODO: Skip Error Object is possibly 'undefined'
-            res.headers["set-cookie"].map((element, index) => {
-              if(index == 1) {
-                resolve(element) // return cookie
-              }
-            })
+            if(res.headers["set-cookie"]) {
+              res.headers["set-cookie"].map((element, index) => {
+                if(index == 1) {
+                  resolve(element) // return cookie
+                }
+              })
+            }
           })
           .catch((err) => {
             rejects(err) // return error value if any
@@ -223,6 +225,26 @@ class ZingMp3Api {
       this.requestZingMp3("/api/v2/song/get/info", {
         id: songId,
         sig: this.hashParam("/api/v2/song/get/info", songId)
+      })
+        .then((res) => {
+          resolve(res)
+        })
+        .catch((err) => {
+          rejects(err)
+        })
+    })
+  }
+
+  public getListArtistSong(artistId: string, page: string, count: string): Promise<any> {
+    return new Promise<any>((resolve, rejects) => {
+      this.requestZingMp3("/api/v2/song/get/list", {
+        id: artistId,
+        type: "artist",
+        page: page,
+        count: count,
+        sort: "new",
+        sectionId: "aSong",
+        sig: this.hashListMV("/api/v2/song/get/list", artistId, "artist", page, count)
       })
         .then((res) => {
           resolve(res)

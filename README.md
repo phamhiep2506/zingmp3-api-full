@@ -3,9 +3,6 @@
 ### Music Player Use ZingMp3 Api
 [https://github.com/phamhiep2506/music-player](https://github.com/phamhiep2506/music-player)
 
-### Demo
-[https://music-player-pink.vercel.app](https://music-player-pink.vercel.app)
-
 ### ⚠️ Please create server use module **zingmp3-api-full** + **Node.js** + **Express.js**
 
 ### Based module [ZingMp3API](https://github.com/whoant/ZingMp3API). Thank whoant 😘
@@ -90,6 +87,13 @@ ZingMp3.getArtist("sontungmtp").then((data) => {
 })
 ```
 
+### Get List Song Artist
+> param {id, page, count}
+```javascript
+ZingMp3.getListArtistSong("IWZ9ZD8A", "1", "15").then((data) => {
+  console.log(data)
+})
+```
 ### Get Lyric Song
 > param {id}
 ```javascript

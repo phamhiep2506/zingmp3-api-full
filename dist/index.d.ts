@@ -21,6 +21,7 @@ declare class ZingMp3Api {
     getChartHome(): Promise<any>;
     getNewReleaseChart(): Promise<any>;
     getInfoSong(songId: string): Promise<any>;
+    getListArtistSong(artistId: string, page: string, count: string): Promise<any>;
     getArtist(name: string): Promise<any>;
     getLyric(songId: string): Promise<any>;
     search(name: string): Promise<any>;
